@@ -13,7 +13,9 @@ namespace tc
         kSpvrUnknown,
         kSpvrParseJsonFailed,   // parse json failed
         kSpvrRequestFailed,     // http request failed
-        kSpvrCodeError,         // code != 200
+        kSpvrJustCodeError,     // code != 200
+        // detail code errors below
+        // kSpvr xxx
         kSpvrDataError,         // data is invalid
         kSpvrNoOnlineServers,   // don't have online servers
     };
@@ -31,8 +33,8 @@ namespace tc
         else if (err == SpvrError::kSpvrRequestFailed) {
             return "Network request failed";
         }
-        else if (err == SpvrError::kSpvrCodeError) {
-            return "Code error";
+        else if (err == SpvrError::kSpvrJustCodeError) {
+            return "Code error, != 200";
         }
         else if (err == SpvrError::kSpvrDataError) {
             return "Data error";
