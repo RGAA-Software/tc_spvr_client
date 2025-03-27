@@ -37,7 +37,7 @@ namespace tc
         try {
             auto obj = json::parse(resp.body);
             if (obj["code"].get<int>() != 200) {
-                return TRError(SpvrError::kSpvrCodeError);
+                return TRError(SpvrError::kSpvrJustCodeError);
             }
 
             auto data = obj["data"];
@@ -124,7 +124,7 @@ namespace tc
         try {
             auto obj = json::parse(resp.body);
             if (obj["code"].get<int>() != 200) {
-                return TRError(SpvrError::kSpvrCodeError);
+                return TRError(SpvrError::kSpvrJustCodeError);
             }
             // "device_local_ips": "10.0.0.16;192.168.56.1;",
             // "relay_server_ip": "39.71.84.236",
