@@ -124,6 +124,7 @@ namespace tc
         try {
             auto obj = json::parse(resp.body);
             if (obj["code"].get<int>() != 200) {
+                LOGE("GetDevice info failed: {}", obj["code"]);
                 return TRError(SpvrError::kSpvrJustCodeError);
             }
             // "device_local_ips": "10.0.0.16;192.168.56.1;",
