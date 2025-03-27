@@ -12,6 +12,7 @@
 #include "spvr_server_info.h"
 #include "spvr_device_info.h"
 #include "expt/expected.h"
+#include "spvr_errors.h"
 
 namespace tc
 {
@@ -21,8 +22,8 @@ namespace tc
         SpvrManager();
         void SetHostPort(const std::string& host, int port);
 
-        Result<SpvrOnlineServers, std::string> GetOnlineServers();
-        Result<SpvrDeviceInfo, std::string> GetDeviceInfo();
+        Result<SpvrOnlineServers, SpvrError> GetOnlineServers();
+        Result<SpvrDeviceInfo, SpvrError> GetDeviceInfo(const std::string& device_id);
 
     private:
         std::string host_{};
