@@ -110,7 +110,7 @@ namespace tc
         }
     }
 
-    Result<SpvrDeviceInfo, SpvrError> SpvrManager::GetDeviceInfo(const std::string& device_id) {
+    Result<SpvrDeviceInfo, SpvrError> SpvrManager::GetRelayDeviceInfo(const std::string& device_id) {
         auto client =
                 HttpClient::Make(std::format("{}:{}", host_, port_), kSpvrGetDeviceInfo, 3);
         auto resp = client->Request({
