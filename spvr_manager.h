@@ -23,7 +23,7 @@ namespace tc
         void SetHostPort(const std::string& host, int port);
 
         Result<SpvrOnlineServers, SpvrError> GetOnlineServers();
-        Result<SpvrDeviceInfo, SpvrError> GetDeviceInfo(const std::string& device_id);
+        Result<SpvrDeviceInfo, SpvrError> GetRelayDeviceInfo(const std::string& device_id);
 
     private:
         std::string host_{};
