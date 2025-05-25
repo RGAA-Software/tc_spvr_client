@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 #include <tuple>
+#include <memory>
 
 #include "spvr_server_info.h"
 #include "spvr_device_info.h"
@@ -22,8 +23,9 @@ namespace tc
         SpvrManager();
         void SetHostPort(const std::string& host, int port);
 
-        Result<SpvrOnlineServers, SpvrError> GetOnlineServers();
-        Result<SpvrDeviceInfo, SpvrError> GetRelayDeviceInfo(const std::string& device_id);
+        Result<std::shared_ptr<SpvrOnlineServers>, SpvrError> GetOnlineServers();
+        // id has prefix, eg: server_xxxx
+        Result<std::shared_ptr<SpvrDeviceInfo>, SpvrError> GetRelayDeviceInfo(const std::string& device_id);
 
     private:
         std::string host_{};
