@@ -18,6 +18,11 @@ namespace tc
     // "relay_server_port": "40302"
     class SpvrDeviceInfo {
     public:
+        [[nodiscard]] bool IsValid() {
+            return !device_id_.empty() && !relay_server_ip_.empty() && relay_server_port_ > 0;
+        }
+
+    public:
         std::vector<std::string> device_local_ips_;
         std::string device_w3c_ip_;
         int device_local_port_ = 0;
