@@ -25,7 +25,7 @@ namespace tc
         port_ = port;
     }
 
-    Result<SpvrOnlineServers, SpvrError> SpvrManager::GetOnlineServers() {
+    Result<std::shared_ptr<SpvrOnlineServers>, SpvrError> SpvrManager::GetOnlineServers() {
         auto client =
                 HttpClient::Make(std::format("{}:{}", host_, port_), kSpvrGetOnlineServers, 3000);
         auto resp = client->Request();
@@ -45,7 +45,7 @@ namespace tc
                 return TRError(SpvrError::kSpvrDataError);
             }
 
-            SpvrOnlineServers online_servers;
+            auto online_servers = std::make_shared<SpvrOnlineServers>();
             bool settings_changed = false;
             for (const auto& item : data) {
                 auto srv_type = item["server_type"].get<std::string>();
@@ -60,7 +60,7 @@ namespace tc
                     auto r = HttpBaseOp::CanPingServer(srv_w3c_ip, srv_working_port);
                     LOGI("Ping relay server result: {}", r.has_value());
                     if (r) {
-                        online_servers.relay_servers_.push_back(SpvrRelayServerInfo {
+                        online_servers->relay_servers_.push_back(SpvrRelayServerInfo {
                             .srv_type_ = srv_type,
                             .srv_name_ = srv_name,
                             .srv_id_ = srv_id,
@@ -78,7 +78,7 @@ namespace tc
                     LOGI("Ping profile server result: {}", r.has_value());
                     // save to db
                     if (r) {
-                        online_servers.pr_servers_.push_back(SpvrProfileServerInfo {
+                        online_servers->pr_servers_.push_back(SpvrProfileServerInfo {
                             .srv_type_ = srv_type,
                             .srv_name_ = srv_name,
                             .srv_id_ = srv_id,
@@ -110,7 +110,7 @@ namespace tc
         }
     }
 
-    Result<SpvrDeviceInfo, SpvrError> SpvrManager::GetRelayDeviceInfo(const std::string& device_id) {
+    Result<std::shared_ptr<SpvrDeviceInfo>, SpvrError> SpvrManager::GetRelayDeviceInfo(const std::string& device_id) {
         auto client =
                 HttpClient::Make(std::format("{}:{}", host_, port_), kSpvrGetDeviceInfo, 3000);
         auto resp = client->Request({
@@ -136,12 +136,12 @@ namespace tc
             auto relay_server_ip = obj["data"]["relay_server_ip"].get<std::string>();
             auto relay_server_port = std::atoi(obj["data"]["relay_server_port"].get<std::string>().c_str());
 
-            return SpvrDeviceInfo {
+            return std::make_shared<SpvrDeviceInfo>(SpvrDeviceInfo {
                 .device_w3c_ip_ = device_w3c_ip,
                 .device_id_ = device_id,
                 .relay_server_ip_ = relay_server_ip,
                 .relay_server_port_ = relay_server_port,
-            };
+            });
         } catch(...) {
             return TRError(SpvrError::kSpvrParseJsonFailed);
         }
