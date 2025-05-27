@@ -26,8 +26,7 @@ namespace tc
     }
 
     Result<std::shared_ptr<SpvrOnlineServers>, SpvrError> SpvrManager::GetOnlineServers() {
-        auto client =
-                HttpClient::Make(std::format("{}:{}", host_, port_), kSpvrGetOnlineServers, 3000);
+        auto client = HttpClient::Make(host_, port_, kSpvrGetOnlineServers, 3000);
         auto resp = client->Request();
         if (resp.status != 200 || resp.body.empty()) {
             LOGE("Request new device failed.");
@@ -112,7 +111,7 @@ namespace tc
 
     Result<std::shared_ptr<SpvrDeviceInfo>, SpvrError> SpvrManager::GetRelayDeviceInfo(const std::string& device_id) {
         auto client =
-                HttpClient::Make(std::format("{}:{}", host_, port_), kSpvrGetDeviceInfo, 3000);
+                HttpClient::Make(host_, port_, kSpvrGetDeviceInfo, 3000);
         auto resp = client->Request({
             {"device_id", device_id},
         });
