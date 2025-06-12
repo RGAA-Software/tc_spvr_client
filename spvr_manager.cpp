@@ -26,6 +26,9 @@ namespace tc
     }
 
     Result<std::shared_ptr<SpvrOnlineServers>, SpvrError> SpvrManager::GetOnlineServers() {
+        if (host_.empty() || port_ <= 0) {
+            return TRError(SpvrError::kSpvrRequestFailed);
+        }
         auto client = HttpClient::Make(host_, port_, kSpvrGetOnlineServers, 3000);
         auto resp = client->Request();
         if (resp.status != 200 || resp.body.empty()) {
