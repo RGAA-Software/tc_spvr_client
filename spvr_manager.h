@@ -11,7 +11,6 @@
 #include <memory>
 
 #include "spvr_server_info.h"
-#include "spvr_device_info.h"
 #include "expt/expected.h"
 #include "spvr_errors.h"
 
@@ -24,8 +23,6 @@ namespace tc
         void SetHostPort(const std::string& host, int port);
 
         Result<std::shared_ptr<SpvrOnlineServers>, SpvrError> GetOnlineServers();
-        // id has prefix, eg: server_xxxx
-        Result<std::shared_ptr<SpvrDeviceInfo>, SpvrError> GetRelayDeviceInfo(const std::string& device_id);
 
     private:
         std::string host_{};

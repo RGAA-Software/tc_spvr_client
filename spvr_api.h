@@ -11,7 +11,6 @@ namespace tc
 {
 
     const std::string kSpvrGetOnlineServers = "/get/online/servers";
-    const std::string kSpvrGetDeviceInfo = "/get/device/info";
 
 }
 

@@ -112,41 +112,4 @@ namespace tc
         }
     }
 
-    Result<std::shared_ptr<SpvrDeviceInfo>, SpvrError> SpvrManager::GetRelayDeviceInfo(const std::string& device_id) {
-        auto client =
-                HttpClient::Make(host_, port_, kSpvrGetDeviceInfo, 3000);
-        auto resp = client->Request({
-            {"device_id", device_id},
-        });
-        if (resp.status != 200 || resp.body.empty()) {
-            LOGE("Request new device failed.");
-            return TRError(SpvrError::kSpvrRequestFailed);
-        }
-
-        try {
-            auto obj = json::parse(resp.body);
-            if (obj["code"].get<int>() != 200) {
-                LOGE("GetDevice info failed: {}", obj["code"]);
-                return TRError(SpvrError::kSpvrJustCodeError);
-            }
-            // "device_local_ips": "10.0.0.16;192.168.56.1;",
-            // "relay_server_ip": "39.71.84.236",
-            // "device_w3c_ip": "39.71.84.236",
-            // "device_id": "server_488050198",
-            // "relay_server_port": "40302"
-            auto device_w3c_ip = obj["data"]["device_w3c_ip"].get<std::string>();
-            auto relay_server_ip = obj["data"]["relay_server_ip"].get<std::string>();
-            auto relay_server_port = std::atoi(obj["data"]["relay_server_port"].get<std::string>().c_str());
-
-            return std::make_shared<SpvrDeviceInfo>(SpvrDeviceInfo {
-                .device_w3c_ip_ = device_w3c_ip,
-                .device_id_ = device_id,
-                .relay_server_ip_ = relay_server_ip,
-                .relay_server_port_ = relay_server_port,
-            });
-        } catch(...) {
-            return TRError(SpvrError::kSpvrParseJsonFailed);
-        }
-    }
-
 }
