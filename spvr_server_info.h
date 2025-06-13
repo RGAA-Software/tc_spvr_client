@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-namespace tc
+namespace spvr
 {
 
     // Relay Server Information
