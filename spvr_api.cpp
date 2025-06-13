@@ -2,7 +2,6 @@
 // Created by RGAA on 26/03/2025.
 //
 
-#include "spvr_manager.h"
 #include "spvr_api.h"
 #include "spvr_server_info.h"
 #include "spvr_errors.h"
@@ -13,23 +12,14 @@
 
 using namespace nlohmann;
 
-namespace tc
+namespace spvr
 {
 
-    SpvrManager::SpvrManager() {
-
-    }
-
-    void SpvrManager::SetHostPort(const std::string& host, int port) {
-        host_ = host;
-        port_ = port;
-    }
-
-    Result<std::shared_ptr<SpvrOnlineServers>, SpvrError> SpvrManager::GetOnlineServers() {
-        if (host_.empty() || port_ <= 0) {
+    tc::Result<std::shared_ptr<SpvrOnlineServers>, SpvrError> SpvrApi::GetOnlineServers(const std::string& spvr_srv_host, int spvr_srv_port) {
+        if (spvr_srv_host.empty() || spvr_srv_port <= 0) {
             return TRError(SpvrError::kSpvrRequestFailed);
         }
-        auto client = HttpClient::Make(host_, port_, kSpvrGetOnlineServers, 3000);
+        auto client = tc::HttpClient::Make(spvr_srv_host, spvr_srv_port, kSpvrGetOnlineServers, 3000);
         auto resp = client->Request();
         if (resp.status != 200 || resp.body.empty()) {
             LOGE("Request new device failed.");
@@ -59,7 +49,7 @@ namespace tc
                 auto srv_grpc_port = item["grpc_port"].get<std::string>();
                 if (srv_type == "0") {
                     // relay server
-                    auto r = HttpBaseOp::CanPingServer(srv_w3c_ip, srv_working_port);
+                    auto r = tc::HttpBaseOp::CanPingServer(srv_w3c_ip, srv_working_port);
                     LOGI("Ping relay server result: {}", r.has_value());
                     if (r) {
                         online_servers->relay_servers_.push_back(SpvrRelayServerInfo {
@@ -76,7 +66,7 @@ namespace tc
                 }
                 else if (srv_type == "1") {
                     // profile server ; check it
-                    auto r = HttpBaseOp::CanPingServer(srv_w3c_ip, srv_working_port);
+                    auto r = tc::HttpBaseOp::CanPingServer(srv_w3c_ip, srv_working_port);
                     LOGI("Ping profile server result: {}", r.has_value());
                     // save to db
                     if (r) {

@@ -5,7 +5,7 @@
 #ifndef GAMMARAY_SPVR_ERRORS_H
 #define GAMMARAY_SPVR_ERRORS_H
 
-namespace tc
+namespace spvr
 {
 
     enum class SpvrError {
