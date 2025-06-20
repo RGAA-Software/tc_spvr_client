@@ -49,7 +49,7 @@ namespace spvr
                 auto srv_grpc_port = item["grpc_port"].get<std::string>();
                 if (srv_type == "0") {
                     // relay server
-                    auto r = tc::HttpBaseOp::CanPingServer(srv_w3c_ip, srv_working_port);
+                    auto r = tc::HttpBaseOp::CanPingServer(srv_w3c_ip, std::atoi(srv_working_port.c_str()));
                     LOGI("Ping relay server result: {}", r.has_value());
                     if (r) {
                         online_servers->relay_servers_.push_back(SpvrRelayServerInfo {
@@ -66,7 +66,7 @@ namespace spvr
                 }
                 else if (srv_type == "1") {
                     // profile server ; check it
-                    auto r = tc::HttpBaseOp::CanPingServer(srv_w3c_ip, srv_working_port);
+                    auto r = tc::HttpBaseOp::CanPingServer(srv_w3c_ip, std::atoi(srv_working_port.c_str()));
                     LOGI("Ping profile server result: {}", r.has_value());
                     // save to db
                     if (r) {
