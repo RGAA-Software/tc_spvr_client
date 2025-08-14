@@ -21,8 +21,8 @@ namespace spvr
 
     class SpvrApi {
     public:
-        static tc::Result<std::shared_ptr<SpvrOnlineServers>, SpvrError>
-                GetOnlineServers(const std::string& spvr_srv_host, int spvr_srv_port);
+        //static tc::Result<std::shared_ptr<SpvrOnlineServers>, SpvrError>
+        //        GetOnlineServers(const std::string& spvr_srv_host, int spvr_srv_port);
     };
 
 }
