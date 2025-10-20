@@ -1,7 +1,7 @@
-project(tc_spv_client)
+project(tc_spvr_client)
 
 set(SRCS
-        spvr_api.cpp
+    spvr_api.cpp
 )
 
 add_library(${PROJECT_NAME} ${SRCS})

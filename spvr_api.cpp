@@ -10,6 +10,7 @@
 #include "tc_common_new/log.h"
 #include "tc_common_new/http_base_op.h"
 
+using namespace tc;
 using namespace nlohmann;
 
 namespace spvr
@@ -101,5 +102,33 @@ namespace spvr
 //            return TRError(SpvrError::kSpvrParseJsonFailed);
 //        }
 //    }
+
+    // Ping
+    tc::Result<bool, int> SpvrApi::Ping(const std::string& host, int port, const std::string& appkey) {
+        auto client = HttpClient::MakeSSL(host, port, kSpvrPing, 3000);
+        auto resp = client->Request({
+            {"appkey", appkey}
+        });
+        if (resp.status != 200 || resp.body.empty()) {
+            LOGE("GetRelayDeviceInfo failed : {}", resp.status);
+            return TRError(resp.status);
+        }
+
+        // {
+        //     "code": 200,
+        //     "message": "ok",
+        //     "data": "Pong"
+        // }
+        try {
+            auto obj = json::parse(resp.body);
+            auto code = obj["code"].get<int>();
+            auto data = obj["data"].get<std::string>();
+            return code == 200 && data == "Pong";
+        }
+        catch (const std::exception& e) {
+            LOGE("Ping Exception: {}, body: {}", e.what(), resp.body);
+            return TRError((int)SpvrError::kSpvrParseJsonFailed);
+        }
+    }
 
 }

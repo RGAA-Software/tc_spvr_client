@@ -18,11 +18,15 @@ namespace spvr
 {
 
     const std::string kSpvrGetOnlineServers = "/get/online/servers";
+    const std::string kSpvrPing = "/ping";
 
     class SpvrApi {
     public:
         //static tc::Result<std::shared_ptr<SpvrOnlineServers>, SpvrError>
         //        GetOnlineServers(const std::string& spvr_srv_host, int spvr_srv_port);
+
+        static tc::Result<bool, int> Ping(const std::string& host, int port, const std::string& appkey);
+
     };
 
 }
