@@ -6,9 +6,16 @@
 #include "spvr_server_info.h"
 #include "spvr_errors.h"
 #include "json/json.hpp"
+#include "spvr_device.h"
 #include "tc_common_new/http_client.h"
 #include "tc_common_new/log.h"
 #include "tc_common_new/http_base_op.h"
+#include "tc_common_new/thread.h"
+#include "tc_common_new/message_notifier.h"
+#include "tc_common_new/hardware.h"
+#include "tc_common_new/ip_util.h"
+#include "tc_common_new/base64.h"
+#include "tc_common_new/uuid.h"
 
 using namespace tc;
 using namespace nlohmann;
@@ -16,109 +23,17 @@ using namespace nlohmann;
 namespace spvr
 {
 
-//    tc::Result<std::shared_ptr<SpvrOnlineServers>, SpvrError> SpvrApi::GetOnlineServers(const std::string& spvr_srv_host, int spvr_srv_port) {
-//        if (spvr_srv_host.empty() || spvr_srv_port <= 0) {
-//            return TRError(SpvrError::kSpvrRequestFailed);
-//        }
-//        auto client = tc::HttpClient::MakeSSL(spvr_srv_host, spvr_srv_port, kSpvrGetOnlineServers, 3000);
-//        auto resp = client->Request();
-//        if (resp.status != 200 || resp.body.empty()) {
-//            LOGE("Request new device failed.");
-//            return TRError(SpvrError::kSpvrRequestFailed);
-//        }
-//
-//        try {
-//            auto obj = json::parse(resp.body);
-//            if (obj["code"].get<int>() != 200) {
-//                return TRError(SpvrError::kSpvrJustCodeError);
-//            }
-//
-//            auto data = obj["data"];
-//            if (!data.is_array()) {
-//                return TRError(SpvrError::kSpvrDataError);
-//            }
-//
-//            auto online_servers = std::make_shared<SpvrOnlineServers>();
-//            bool settings_changed = false;
-//            for (const auto& item : data) {
-//                auto srv_type = item["server_type"].get<std::string>();
-//                auto srv_name = item["server_name"].get<std::string>();
-//                auto srv_id = item["server_id"].get<std::string>();
-//                auto srv_w3c_ip = item["w3c_ip"].get<std::string>();
-//                auto srv_local_ip = item["local_ip"].get<std::string>();
-//                auto srv_working_port = item["working_port"].get<std::string>();
-//                auto srv_grpc_port = item["grpc_port"].get<std::string>();
-//                if (srv_type == "0") {
-//                    // relay server
-//                    auto r = tc::HttpBaseOp::CanPingServer(srv_w3c_ip, std::atoi(srv_working_port.c_str()));
-//                    LOGI("Ping relay server result: {}", r.has_value());
-//                    if (r) {
-//                        online_servers->relay_servers_.push_back(SpvrRelayServerInfo {
-//                            .srv_type_ = srv_type,
-//                            .srv_name_ = srv_name,
-//                            .srv_id_ = srv_id,
-//                            .srv_w3c_ip_ = srv_w3c_ip,
-//                            .srv_local_ip_ = srv_local_ip,
-//                            .srv_working_port_ = srv_working_port,
-//                            .srv_grpc_port_ = srv_grpc_port,
-//                        });
-//                        settings_changed = true;
-//                    }
-//                }
-//                else if (srv_type == "1") {
-//                    // profile server ; check it
-//                    auto r = tc::HttpBaseOp::CanPingServer(srv_w3c_ip, std::atoi(srv_working_port.c_str()));
-//                    LOGI("Ping profile server result: {}", r.has_value());
-//                    // save to db
-//                    if (r) {
-//                        online_servers->pr_servers_.push_back(SpvrProfileServerInfo {
-//                            .srv_type_ = srv_type,
-//                            .srv_name_ = srv_name,
-//                            .srv_id_ = srv_id,
-//                            .srv_w3c_ip_ = srv_w3c_ip,
-//                            .srv_local_ip_ = srv_local_ip,
-//                            .srv_working_port_ = srv_working_port,
-//                            .srv_grpc_port_ = srv_grpc_port,
-//                        });
-//                        settings_changed = true;
-//                    }
-//                }
-//
-//                LOGI("--online server : {}, type: {}", srv_name, srv_type);
-//                LOGI("----srv w3c ip: {}", srv_w3c_ip);
-//                LOGI("----srv local ip: {}", srv_local_ip);
-//                LOGI("----srv id: {}", srv_id);
-//                LOGI("----srv working port: {}", srv_working_port);
-//                LOGI("----srv grpc port: {}", srv_grpc_port);
-//            }
-//
-//            if (settings_changed) {
-//                return online_servers;
-//            } else {
-//                return TRError(SpvrError::kSpvrNoOnlineServers);
-//            }
-//        } catch(std::exception& e) {
-//            LOGE("RequestNewDevice failed: {}, message: {}", e.what(), resp.body);
-//            return TRError(SpvrError::kSpvrParseJsonFailed);
-//        }
-//    }
-
     // Ping
-    tc::Result<bool, int> SpvrApi::Ping(const std::string& host, int port, const std::string& appkey) {
+    tc::Result<bool, SpvrApiError> SpvrApi::Ping(const std::string& host, int port, const std::string& appkey) {
         auto client = HttpClient::MakeSSL(host, port, kSpvrPing, 3000);
         auto resp = client->Request({
             {"appkey", appkey}
         });
         if (resp.status != 200 || resp.body.empty()) {
             LOGE("GetRelayDeviceInfo failed : {}", resp.status);
-            return TRError(resp.status);
+            return TRError((SpvrApiError)resp.status);
         }
 
-        // {
-        //     "code": 200,
-        //     "message": "ok",
-        //     "data": "Pong"
-        // }
         try {
             auto obj = json::parse(resp.body);
             auto code = obj["code"].get<int>();
@@ -127,8 +42,165 @@ namespace spvr
         }
         catch (const std::exception& e) {
             LOGE("Ping Exception: {}, body: {}", e.what(), resp.body);
-            return TRError((int)SpvrError::kSpvrParseJsonFailed);
+            return TRError(SpvrApiError::kParseJsonFailed);
         }
     }
 
+    Result<SpvrDevicePtr, SpvrApiError> SpvrApi::RequestNewDevice(const std::string& host,
+                                                                  int port,
+                                                                  const std::string& appkey,
+                                                                  const std::string& info) {
+        std::string hw_info;
+        if (info.empty()) {
+            auto hardware_desc = Hardware::Instance()->GetHardwareDescription();
+            auto et_info = IPUtil::ScanIPs();
+            std::string mac_address;
+            for (auto &item: et_info) {
+                if (!item.mac_address_.empty() && mac_address.find(item.mac_address_) != std::string::npos) {
+                    continue;
+                }
+                mac_address = mac_address.append(item.mac_address_);
+            }
+            if (hardware_desc.empty()) {
+                LOGW("Hardware desc is empty! Can't request new device!");
+            }
+            hw_info = Base64::Base64Encode(hardware_desc + mac_address);
+        }
+        else {
+            hw_info = info;
+        }
+
+        // SHIT!
+        if (hw_info.empty()) {
+            hw_info = GetUUID();
+        }
+
+        auto client = HttpClient::MakeSSL(host, port, kApiRequestNewDevice);
+        auto resp = client->Post({
+#ifdef WIN32
+            {"platform", "windows"},
+#else
+            {"platform", "android"},
+#endif
+             {"hw_info", hw_info},
+             {"appkey", appkey}
+        });
+
+        LOGI("RequestNewDevice, hw_info: {}, appkey: {}", hw_info, appkey);
+        LOGI("NewDeviceResp, status: {}, body: {}", resp.status, resp.body);
+        if (resp.status != 200 || resp.body.empty()) {
+            LOGE("Request new device failed, code: {}", resp.status);
+            return TcErr((SpvrApiError)resp.status);
+        }
+
+        if (auto r = ParseJsonAsDevice(resp.body); r) {
+            return r;
+        }
+        else {
+            return TcErr(SpvrApiError::kParseJsonFailed);
+        }
+    }
+
+    Result<SpvrDevicePtr, SpvrApiError> SpvrApi::UpdateRandomPwd(const std::string& host,
+                                                                 int port,
+                                                                 const std::string& appkey,
+                                                                 const std::string& target_device_id) {
+        auto client = HttpClient::MakeSSL(host, port, kApiUpdateRandomPwd);
+        auto resp = client->Post({
+            {"device_id", target_device_id},
+            {"appkey", appkey}
+        });
+
+        LOGI("UpdateRandomPwd, status:{}, : {}", resp.status, resp.body);
+        if (resp.status != 200 || resp.body.empty()) {
+            LOGE("UpdateRandomPwd failed: {}", resp.status);
+            return TcErr((SpvrApiError)resp.status);
+        }
+
+        if (auto r = ParseJsonAsDevice(resp.body); r) {
+            return r;
+        }
+        else {
+            return TcErr(SpvrApiError::kParseJsonFailed);
+        }
+    }
+
+    Result<SpvrDevicePtr, SpvrApiError> SpvrApi::UpdateSafetyPwd(const std::string& host,
+                                                                 int port,
+                                                                 const std::string& appkey,
+                                                                 const std::string& target_device_id,
+                                                                 const std::string& safety_pwd_md5) {
+        auto client = HttpClient::MakeSSL(host, port, kApiUpdateSafetyPwd, 2000);
+        auto resp = client->Post({
+            {"device_id", target_device_id},
+            {"safety_pwd_md5", safety_pwd_md5},
+            {"appkey", appkey}
+        });
+
+        LOGI("UpdateSafetyPwd, status: {}, : {}", resp.status, resp.body);
+        if (resp.status != 200 || resp.body.empty()) {
+            LOGE("UpdateSafetyPwd failed: {}", resp.status);
+            return TcErr((SpvrApiError)resp.status);
+        }
+
+        if (auto r = ParseJsonAsDevice(resp.body); r) {
+            return r;
+        }
+        else {
+            return TcErr(SpvrApiError::kParseJsonFailed);
+        }
+    }
+
+    Result<SpvrDevicePtr, SpvrApiError> SpvrApi::QueryDevice(const std::string& host,
+                                                             int port,
+                                                             const std::string& appkey,
+                                                             const std::string& device_id) {
+        auto client = HttpClient::MakeSSL(host, port, kApiQueryDeviceById);
+        auto resp = client->Request({
+            {"device_id", device_id},
+            {"appkey", appkey}
+        });
+
+        //LOGI("Req path: {}", client->GetReqPath());
+        //LOGI("QueryDevice, status: {}, : {}", resp.status, resp.body);
+        if (resp.status != 200 || resp.body.empty()) {
+            LOGE("GetDevice failed: {}, code: {}", device_id, resp.status);
+            return TcErr((SpvrApiError)resp.status);
+        }
+
+        if (auto r = ParseJsonAsDevice(resp.body); r) {
+            return r;
+        }
+        else {
+            return TcErr(SpvrApiError::kParseJsonFailed);
+        }
+    }
+
+    std::shared_ptr<SpvrDevice> SpvrApi::ParseJsonAsDevice(const std::string& body) {
+        try {
+            auto obj = json::parse(body);
+            auto resp_device_id = obj["data"]["device_id"].get<std::string>();
+            auto random_pwd_md5 = obj["data"]["random_pwd_md5"].get<std::string>();
+            auto gen_random_pwd = obj["data"]["gen_random_pwd"].get<std::string>();
+            auto safety_pwd_md5 = obj["data"]["safety_pwd_md5"].get<std::string>();
+            auto used_time = obj["data"]["used_time"].get<int64_t>();
+            auto created_timestamp = obj["data"]["created_timestamp"].get<int64_t>();
+            auto last_update_timestamp = obj["data"]["last_update_timestamp"].get<int64_t>();
+            //LOGI("PaserJsonAsDevice: {} => RPWD: {}, SPWD: {}", resp_device_id, random_pwd_md5, safety_pwd_md5);
+
+            auto device = std::make_shared<SpvrDevice>();
+            device->device_id_ = resp_device_id;
+            device->gen_random_pwd_ = gen_random_pwd;
+            device->random_pwd_md5_ = random_pwd_md5;
+            device->safety_pwd_md5_ = safety_pwd_md5;
+            device->used_time_ = used_time;
+            device->created_timestamp_ = created_timestamp;
+            device->updated_timestamp_ = last_update_timestamp;
+            return device;
+        } catch(std::exception& e) {
+            LOGE("ParseJsonAsDevice failed: {}, message: {}", e.what(), body);
+            return nullptr;
+        }
+    }
+    
 }

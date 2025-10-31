@@ -8,44 +8,26 @@
 namespace spvr
 {
 
-    enum class SpvrError {
-        kSpvrOk,
-        kSpvrUnknown,
-        kSpvrParseJsonFailed,   // parse json failed
-        kSpvrRequestFailed,     // http request failed
-        kSpvrJustCodeError,     // code != 200
-        // detail code errors below
-        // kSpvr xxx
-        kSpvrDataError,         // data is invalid
-        kSpvrNoOnlineServers,   // don't have online servers
-    };
+    enum class SpvrApiError {
+        kInvalidHostAddress,
+        kParseJsonFailed,
 
-    static std::string SpvrError2String(const SpvrError& err) {
-        if (err == SpvrError::kSpvrOk) {
-            return "Ok";
-        }
-        else if (err == SpvrError::kSpvrUnknown) {
-            return "Unknown";
-        }
-        else if (err == SpvrError::kSpvrParseJsonFailed) {
-            return "Parse json failed";
-        }
-        else if (err == SpvrError::kSpvrRequestFailed) {
-            return "Network request failed";
-        }
-        else if (err == SpvrError::kSpvrJustCodeError) {
-            return "Code error, != 200";
-        }
-        else if (err == SpvrError::kSpvrDataError) {
-            return "Data error";
-        }
-        else if (err == SpvrError::kSpvrNoOnlineServers) {
-            return "No online servers";
-        }
-        else {
-            return "Unknown";
-        }
-    }
+        kInvalidParams = 600,
+        kDatabaseError = 601,
+        kDeviceNotFound = 602,
+        kPasswordInvalid = 603,
+        kInvalidAppkey = 604,
+        kCreateDeviceFailed = 605,
+        kInvalidAuthorization = 606,
+        kInternalError = 607,
+        kUserAlreadyExists = 608,
+        kUserNotFound = 609,
+        kUserUpdateFailed = 610,
+        kFileNoExtension = 611,
+        kUploadFileFailed = 612,
+        kVerifyPasswordFailed = 613,
+        kStreamNotFound = 614,
+    };
 
 }
 
