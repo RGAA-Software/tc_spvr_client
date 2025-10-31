@@ -2,7 +2,7 @@
 // Created by RGAA on 26/03/2025.
 //
 
-#include "spvr_api.h"
+#include "spvr_device_api.h"
 #include "spvr_server_info.h"
 #include "spvr_errors.h"
 #include "json/json.hpp"
@@ -20,11 +20,29 @@
 using namespace tc;
 using namespace nlohmann;
 
+// ping
+const std::string kSpvrPing = "/ping";
+
+// /api/v1/device/control
+const std::string kSpvrDeviceControl = "/api/v1/device/control";
+
+// create new device
+const std::string kApiRequestNewDevice = kSpvrDeviceControl + "/create/new/device";
+
+// update random password
+const std::string kApiUpdateRandomPwd = kSpvrDeviceControl + "/update/random/pwd";
+
+// update safety password
+const std::string kApiUpdateSafetyPwd = kSpvrDeviceControl + "/update/safety/pwd";
+
+// get device by id
+const std::string kApiQueryDeviceById = kSpvrDeviceControl + "/query/device/by/id";
+
 namespace spvr
 {
 
     // Ping
-    tc::Result<bool, SpvrApiError> SpvrApi::Ping(const std::string& host, int port, const std::string& appkey) {
+    tc::Result<bool, SpvrApiError> SpvrDeviceApi::Ping(const std::string& host, int port, const std::string& appkey) {
         auto client = HttpClient::MakeSSL(host, port, kSpvrPing, 3000);
         auto resp = client->Request({
             {"appkey", appkey}
@@ -46,7 +64,7 @@ namespace spvr
         }
     }
 
-    Result<SpvrDevicePtr, SpvrApiError> SpvrApi::RequestNewDevice(const std::string& host,
+    Result<SpvrDevicePtr, SpvrApiError> SpvrDeviceApi::RequestNewDevice(const std::string& host,
                                                                   int port,
                                                                   const std::string& appkey,
                                                                   const std::string& info) {
@@ -101,7 +119,7 @@ namespace spvr
         }
     }
 
-    Result<SpvrDevicePtr, SpvrApiError> SpvrApi::UpdateRandomPwd(const std::string& host,
+    Result<SpvrDevicePtr, SpvrApiError> SpvrDeviceApi::UpdateRandomPwd(const std::string& host,
                                                                  int port,
                                                                  const std::string& appkey,
                                                                  const std::string& target_device_id) {
@@ -125,7 +143,7 @@ namespace spvr
         }
     }
 
-    Result<SpvrDevicePtr, SpvrApiError> SpvrApi::UpdateSafetyPwd(const std::string& host,
+    Result<SpvrDevicePtr, SpvrApiError> SpvrDeviceApi::UpdateSafetyPwd(const std::string& host,
                                                                  int port,
                                                                  const std::string& appkey,
                                                                  const std::string& target_device_id,
@@ -151,7 +169,7 @@ namespace spvr
         }
     }
 
-    Result<SpvrDevicePtr, SpvrApiError> SpvrApi::QueryDevice(const std::string& host,
+    Result<SpvrDevicePtr, SpvrApiError> SpvrDeviceApi::QueryDevice(const std::string& host,
                                                              int port,
                                                              const std::string& appkey,
                                                              const std::string& device_id) {
@@ -176,7 +194,7 @@ namespace spvr
         }
     }
 
-    std::shared_ptr<SpvrDevice> SpvrApi::ParseJsonAsDevice(const std::string& body) {
+    std::shared_ptr<SpvrDevice> SpvrDeviceApi::ParseJsonAsDevice(const std::string& body) {
         try {
             auto obj = json::parse(body);
             auto resp_device_id = obj["data"]["device_id"].get<std::string>();
