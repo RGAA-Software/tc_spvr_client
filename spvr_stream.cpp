@@ -11,8 +11,8 @@ namespace spvr
         return !stream_id_.empty();
     }
 
-    bool SpvrStream::IsRelay() const {
-        return network_type_ == "relay" || !remote_device_id_.empty();
+    bool SpvrStream::HasRelayInfo() const {
+        return !remote_device_id_.empty() && !relay_host_.empty() && relay_port_ > 0 && !relay_appkey_.empty();
     }
 
 }

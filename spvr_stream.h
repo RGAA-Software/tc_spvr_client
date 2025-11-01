@@ -13,7 +13,7 @@ namespace spvr
     class SpvrStream {
     public:
         [[nodiscard]] bool IsValid() const;
-        [[nodiscard]] bool IsRelay() const;
+        [[nodiscard]] bool HasRelayInfo() const;
 
     public:
 
@@ -49,15 +49,24 @@ namespace spvr
         // audio source, global / app_only
         std::string audio_capture_mode_;;
 
+        // direct mode
         std::string stream_host_;
-        int stream_port_ = 9002;
+
+        // direct mode
+        int stream_port_ = 0;
+
+        // relay host
+        std::string relay_host_;
+
+        // repay port
+        int relay_port_ = 0;
+
+        // relay appkey
+        std::string relay_appkey_;
+
         int bg_color_ = 0;
 
         int encode_fps_;
-
-        // network type
-        // websocket / udp_kcp / webrtc_direct / webrtc
-        std::string network_type_;
 
         // direct / signaling
         std::string connect_type_;
@@ -92,7 +101,8 @@ namespace spvr
         // os version
         std::string os_version_;
 
-        //
+        // force relay
+        bool force_relay_ = false;
 
 
         // Extra
