@@ -110,7 +110,13 @@ namespace spvr
 
         // Extra
         ///// NOT in database
-        bool online_ = false;
+        bool direct_online_ = false;
+
+        //
+        bool relay_online_ = false;
+
+        //
+        bool spvr_online_ = false;
     };
 
 }
