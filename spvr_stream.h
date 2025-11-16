@@ -107,6 +107,9 @@ namespace spvr
         // force software
         bool force_software_ = false;
 
+        // wait debug
+        bool wait_debug_ = false;
+
 
         // Extra
         ///// NOT in database
