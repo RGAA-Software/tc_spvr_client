@@ -29,6 +29,10 @@ namespace spvr
         kStreamNotFound = 614,
     };
 
+    static std::string SpvrApiErrorAsString(const SpvrApiError& err) {
+        return "";
+    }
+
 }
 
 #endif //GAMMARAY_SPVR_ERRORS_H
