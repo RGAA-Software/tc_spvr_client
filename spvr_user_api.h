@@ -24,19 +24,21 @@ namespace spvr
                                                               int port,
                                                               const std::string& appkey,
                                                               const std::string& username,
-                                                              const std::string& password);
+                                                              const std::string& hash_password);
 
         // login
         static tc::Result<SpvrUserPtr, SpvrApiError> Login(const std::string& host,
                                                            int port,
                                                            const std::string& appkey,
-                                                           const std::string& uid);
+                                                           const std::string& username,
+                                                           const std::string& hash_password);
 
         // logout
         static tc::Result<SpvrUserPtr, SpvrApiError> Logout(const std::string& host,
                                                             int port,
                                                             const std::string& appkey,
-                                                            const std::string& uid);
+                                                            const std::string& uid,
+                                                            const std::string& hash_password);
     };
 
 }

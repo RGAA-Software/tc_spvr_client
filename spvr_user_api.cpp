@@ -54,15 +54,15 @@ namespace spvr
 
     // register
     tc::Result<SpvrUserPtr, SpvrApiError> SpvrUserApi::Register(const std::string& host,
-                                                          int port,
-                                                          const std::string& appkey,
-                                                          const std::string& username,
-                                                          const std::string& password) {
+                                                                int port,
+                                                                const std::string& appkey,
+                                                                const std::string& username,
+                                                                const std::string& hash_password) {
         auto client = tc::HttpClient::MakeSSL(host, port, kRegister);
 
         json obj;
         obj[kUserName] = username;
-        obj[kUserPassword] = password;
+        obj[kUserPassword] = hash_password;
 
         auto resp = client->Post({
             {"appkey", appkey}
@@ -86,17 +86,42 @@ namespace spvr
 
     // login
     tc::Result<SpvrUserPtr, SpvrApiError> SpvrUserApi::Login(const std::string& host,
-                                                       int port,
-                                                       const std::string& appkey,
-                                                       const std::string& uid) {
-        return TcErr((SpvrApiError)0);
+                                                             int port,
+                                                             const std::string& appkey,
+                                                             const std::string& username,
+                                                             const std::string& hash_password) {
+        auto client = tc::HttpClient::MakeSSL(host, port, kLogin);
+
+        json obj;
+        obj[kUserName] = username;
+        obj[kUserPassword] = hash_password;
+
+        auto resp = client->Post({
+             {"appkey", appkey}
+        }, obj.dump());
+
+        LOGI("Login, status:{}, : {}", resp.status, resp.body);
+        if (resp.status != 200 || resp.body.empty()) {
+            LOGE("Register failed: {}", resp.status);
+            return TcErr((SpvrApiError)resp.status);
+        }
+
+        try {
+            auto data = to_string(json::parse(resp.body)["data"]);
+            return SpvrUser::FromJson(data);
+        }
+        catch(std::exception& e) {
+            LOGE("Parse json failed: {}", e.what());
+            return TcErr(SpvrApiError::kParseJsonFailed);
+        }
     }
 
     // logout
     tc::Result<SpvrUserPtr, SpvrApiError> SpvrUserApi::Logout(const std::string& host,
-                                                        int port,
-                                                        const std::string& appkey,
-                                                        const std::string& uid) {
+                                                              int port,
+                                                              const std::string& appkey,
+                                                              const std::string& uid,
+                                                              const std::string& hash_password) {
         return TcErr((SpvrApiError)0);
     }
 
