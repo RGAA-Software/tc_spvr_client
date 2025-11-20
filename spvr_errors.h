@@ -9,7 +9,7 @@ namespace spvr
 {
 
     enum class SpvrApiError {
-        kInvalidHostAddress,
+        kInvalidHostAddress = 1,
         kParseJsonFailed,
 
         kInvalidParams = 600,
