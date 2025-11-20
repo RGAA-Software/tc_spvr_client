@@ -13,6 +13,7 @@ namespace spvr
 
     const std::string kUserId = "uid";
     const std::string kUserName = "username";
+    const std::string kUserHashPassword = "hash_password";
     const std::string kUserPassword = "password";
     const std::string kUserAssigned = "assigned";
     const std::string kUserCreatedTimestamp = "created_timestamp";

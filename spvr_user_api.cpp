@@ -62,13 +62,14 @@ namespace spvr
 
         json obj;
         obj[kUserName] = username;
-        obj[kUserPassword] = hash_password;
+        obj[kUserHashPassword] = hash_password;
 
         auto resp = client->Post({
             {"appkey", appkey}
         }, obj.dump());
 
-        LOGI("Register, status:{}, : {}", resp.status, resp.body);
+        LOGI("Register, status:{}, {}, address-> {}:{}, user-> {}:{}, appkey: {}",
+             resp.status, resp.body, host, port, username, hash_password, appkey);
         if (resp.status != 200 || resp.body.empty()) {
             LOGE("Register failed: {}", resp.status);
             return TcErr((SpvrApiError)resp.status);
@@ -94,13 +95,14 @@ namespace spvr
 
         json obj;
         obj[kUserName] = username;
-        obj[kUserPassword] = hash_password;
+        obj[kUserHashPassword] = hash_password;
 
         auto resp = client->Post({
              {"appkey", appkey}
         }, obj.dump());
 
-        LOGI("Login, status:{}, : {}", resp.status, resp.body);
+        LOGI("Register, status:{}, {}, address-> {}:{}, user-> {}:{}, appkey: {}",
+             resp.status, resp.body, host, port, username, hash_password, appkey);
         if (resp.status != 200 || resp.body.empty()) {
             LOGE("Register failed: {}", resp.status);
             return TcErr((SpvrApiError)resp.status);
