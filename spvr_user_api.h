@@ -39,6 +39,14 @@ namespace spvr
                                                             const std::string& appkey,
                                                             const std::string& uid,
                                                             const std::string& hash_password);
+
+        // update avatar
+        static tc::Result<SpvrUserPtr, SpvrApiError> UpdateAvatar(const std::string& host,
+                                                                  int port,
+                                                                  const std::string& appkey,
+                                                                  const std::string& uid,
+                                                                  const std::string& hash_password,
+                                                                  const std::string& avatar_path);
     };
 
 }

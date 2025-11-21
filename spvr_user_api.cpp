@@ -127,4 +127,39 @@ namespace spvr
         return TcErr((SpvrApiError)0);
     }
 
+    tc::Result<SpvrUserPtr, SpvrApiError> SpvrUserApi::UpdateAvatar(const std::string& host,
+                                                                    int port,
+                                                                    const std::string& appkey,
+                                                                    const std::string& uid,
+                                                                    const std::string& hash_password,
+                                                                    const std::string& avatar_path) {
+        auto client = tc::HttpClient::MakeSSL(host, port, kUpdateAvatar);
+
+        std::map<std::string, std::string> query = {
+            {"uid", uid},
+            {"appkey", appkey}
+        };
+        std::map<std::string, std::string> form_parts = {};
+        std::map<std::string, std::string> file_parts = {
+            {"file", avatar_path}
+        };
+        auto resp = client->PostMultiPart(query, form_parts, file_parts);
+
+        LOGI("Update Avatar, status:{}, {}, address-> {}:{}, user-> {}:{}, appkey: {}, avatar path: {}",
+             resp.status, resp.body, host, port, uid, hash_password, appkey, avatar_path);
+        if (resp.status != 200 || resp.body.empty()) {
+            LOGE("Register failed: {}", resp.status);
+            return TcErr((SpvrApiError)resp.status);
+        }
+
+        try {
+            auto data = to_string(json::parse(resp.body)["data"]);
+            return SpvrUser::FromJson(data);
+        }
+        catch(std::exception& e) {
+            LOGE("Parse json failed: {}", e.what());
+            return TcErr(SpvrApiError::kParseJsonFailed);
+        }
+    }
+
 }
