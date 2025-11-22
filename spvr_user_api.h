@@ -5,6 +5,7 @@
 #ifndef GAMMARAYPREMIUM_SPVR_USER_API_H
 #define GAMMARAYPREMIUM_SPVR_USER_API_H
 
+#include <map>
 #include <string>
 #include <vector>
 #include <tuple>
@@ -39,6 +40,14 @@ namespace spvr
                                                             const std::string& appkey,
                                                             const std::string& uid,
                                                             const std::string& hash_password);
+
+        // update
+        static tc::Result<SpvrUserPtr, SpvrApiError> Update(const std::string& host,
+                                                            int port,
+                                                            const std::string& appkey,
+                                                            const std::string& uid,
+                                                            const std::string& hash_password,
+                                                            const std::map<std::string, std::string>& values);
 
         // update avatar
         static tc::Result<SpvrUserPtr, SpvrApiError> UpdateAvatar(const std::string& host,
