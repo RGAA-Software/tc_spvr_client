@@ -49,6 +49,13 @@ namespace spvr
                                                             const std::string& hash_password,
                                                             const std::map<std::string, std::string>& values);
 
+        static tc::Result<SpvrUserPtr, SpvrApiError> UpdatePassword(const std::string& host,
+                                                            int port,
+                                                            const std::string& appkey,
+                                                            const std::string& uid,
+                                                            const std::string& old_hash_password,
+                                                            const std::string& new_hash_password);
+
         // update avatar
         static tc::Result<SpvrUserPtr, SpvrApiError> UpdateAvatar(const std::string& host,
                                                                   int port,

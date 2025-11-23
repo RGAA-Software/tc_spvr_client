@@ -127,7 +127,29 @@ namespace spvr
                                                               const std::string& appkey,
                                                               const std::string& uid,
                                                               const std::string& hash_password) {
-        return TcErr((SpvrApiError)0);
+        auto client = tc::HttpClient::MakeSSL(host, port, kLogout);
+
+        std::map<std::string, std::string> query = {
+            {"appkey", appkey}
+        };
+
+        json obj;
+        obj[kUserId] = uid;
+        obj[kUserHashPassword] = hash_password;
+        auto resp = client->Post(query, obj.dump());
+        if (resp.status != 200 || resp.body.empty()) {
+            LOGE("Logout failed: {}", resp.status);
+            return TcErr((SpvrApiError)resp.status);
+        }
+
+        try {
+            auto data = to_string(json::parse(resp.body)["data"]);
+            return SpvrUser::FromJson(data);
+        }
+        catch(std::exception& e) {
+            LOGE("Logout Parse json failed: {}", e.what());
+            return TcErr(SpvrApiError::kParseJsonFailed);
+        }
     }
 
     tc::Result<SpvrUserPtr, SpvrApiError> SpvrUserApi::Update(const std::string& host,
@@ -165,6 +187,38 @@ namespace spvr
         }
     }
 
+    tc::Result<SpvrUserPtr, SpvrApiError> SpvrUserApi::UpdatePassword(const std::string& host,
+                                                                      int port,
+                                                                      const std::string& appkey,
+                                                                      const std::string& uid,
+                                                                      const std::string& old_hash_password,
+                                                                      const std::string& new_hash_password) {
+        auto client = tc::HttpClient::MakeSSL(host, port, kUpdatePassword);
+
+        std::map<std::string, std::string> query = {
+            {"appkey", appkey}
+        };
+
+        json obj;
+        obj[kUserId] = uid;
+        obj[kUserHashPassword] = old_hash_password;
+        obj[kUserNewHashPassword] = new_hash_password;
+        auto resp = client->Post(query, obj.dump());
+        if (resp.status != 200 || resp.body.empty()) {
+            LOGE("Update failed: {}", resp.status);
+            return TcErr((SpvrApiError)resp.status);
+        }
+
+        try {
+            auto data = to_string(json::parse(resp.body)["data"]);
+            return SpvrUser::FromJson(data);
+        }
+        catch(std::exception& e) {
+            LOGE("Update Parse json failed: {}", e.what());
+            return TcErr(SpvrApiError::kParseJsonFailed);
+        }
+    }
+
     tc::Result<SpvrUserPtr, SpvrApiError> SpvrUserApi::UpdateAvatar(const std::string& host,
                                                                     int port,
                                                                     const std::string& appkey,
@@ -174,6 +228,7 @@ namespace spvr
         auto client = tc::HttpClient::MakeSSL(host, port, kUpdateAvatar);
 
         std::map<std::string, std::string> query = {
+            {"uid", uid},
             {"appkey", appkey}
         };
         std::map<std::string, std::string> form_parts = {};
@@ -185,7 +240,7 @@ namespace spvr
         LOGI("Update Avatar, status:{}, {}, address-> {}:{}, user-> {}:{}, appkey: {}, avatar path: {}",
              resp.status, resp.body, host, port, uid, hash_password, appkey, avatar_path);
         if (resp.status != 200 || resp.body.empty()) {
-            LOGE("Register failed: {}", resp.status);
+            LOGE("Update Avatar failed: {}", resp.status);
             return TcErr((SpvrApiError)resp.status);
         }
 
