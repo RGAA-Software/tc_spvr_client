@@ -32,7 +32,8 @@ namespace spvr
                                                            int port,
                                                            const std::string& appkey,
                                                            const std::string& username,
-                                                           const std::string& hash_password);
+                                                           const std::string& hash_password,
+                                                           const std::string& device_id);
 
         // logout
         static tc::Result<SpvrUserPtr, SpvrApiError> Logout(const std::string& host,

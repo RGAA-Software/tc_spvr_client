@@ -38,6 +38,9 @@ const std::string kApiUpdateSafetyPwd = kSpvrDeviceControl + "/update/safety/pwd
 // get device by id
 const std::string kApiQueryDeviceById = kSpvrDeviceControl + "/query/device/by/id";
 
+// update desktop link
+const std::string kApiUpdateDesktopLink = kSpvrDeviceControl + "/update/desktop/link";
+
 namespace spvr
 {
 
@@ -194,26 +197,63 @@ namespace spvr
         }
     }
 
+    tc::Result<SpvrDevicePtr, SpvrApiError> SpvrDeviceApi::UpdateDesktopLink(const std::string& host,
+                                                                             int port,
+                                                                             const std::string& appkey,
+                                                                             const std::string& device_id,
+                                                                             const std::string& desktop_link,
+                                                                             const std::string& desktop_link_raw) {
+        auto client = HttpClient::MakeSSL(host, port, kApiUpdateDesktopLink, 2000);
+        json obj;
+        obj[kDeviceId] = device_id;
+        obj[kDeviceDesktopLink] = desktop_link;
+        obj[kDeviceDesktopLinkRaw] = desktop_link_raw;
+        auto resp = client->Post({
+            {"appkey", appkey}
+        }, obj.dump());
+
+        LOGI("UpdateDesktopLink, status: {}, : {}", resp.status, resp.body);
+        if (resp.status != 200 || resp.body.empty()) {
+            LOGE("UpdateDesktopLink failed: {}", resp.status);
+            return TcErr((SpvrApiError)resp.status);
+        }
+
+        if (auto r = ParseJsonAsDevice(resp.body); r) {
+            return r;
+        }
+        else {
+            return TcErr(SpvrApiError::kParseJsonFailed);
+        }
+    }
+
     std::shared_ptr<SpvrDevice> SpvrDeviceApi::ParseJsonAsDevice(const std::string& body) {
         try {
             auto obj = json::parse(body);
-            auto resp_device_id = obj["data"]["device_id"].get<std::string>();
-            auto random_pwd_md5 = obj["data"]["random_pwd_md5"].get<std::string>();
-            auto gen_random_pwd = obj["data"]["gen_random_pwd"].get<std::string>();
-            auto safety_pwd_md5 = obj["data"]["safety_pwd_md5"].get<std::string>();
-            auto used_time = obj["data"]["used_time"].get<int64_t>();
-            auto created_timestamp = obj["data"]["created_timestamp"].get<int64_t>();
-            auto last_update_timestamp = obj["data"]["last_update_timestamp"].get<int64_t>();
+            auto device_id = obj["data"][kDeviceId].get<std::string>();
+            auto logged_in_user = obj["data"][kDeviceLoggedInUser].get<std::string>();
+            auto seed = obj["data"][kDeviceSeed].get<std::string>();
+            auto random_pwd_md5 = obj["data"][kDeviceRandomPwd].get<std::string>();
+            auto gen_random_pwd = obj["data"][kGenRandomPwd].get<std::string>();
+            auto safety_pwd_md5 = obj["data"][kDeviceSafetyPwd].get<std::string>();
+            auto used_time = obj["data"][kUsedTime].get<int64_t>();
+            auto created_timestamp = obj["data"][kDeviceCreatedTimestamp].get<int64_t>();
+            auto last_update_timestamp = obj["data"][kDeviceUpdatedTimestamp].get<int64_t>();
+            auto desktop_link = obj["data"][kDeviceDesktopLink].get<std::string>();
+            auto desktop_link_raw = obj["data"][kDeviceDesktopLinkRaw].get<std::string>();
             //LOGI("PaserJsonAsDevice: {} => RPWD: {}, SPWD: {}", resp_device_id, random_pwd_md5, safety_pwd_md5);
 
             auto device = std::make_shared<SpvrDevice>();
-            device->device_id_ = resp_device_id;
-            device->gen_random_pwd_ = gen_random_pwd;
+            device->device_id_ = device_id;
+            device->logged_in_user_id_ = logged_in_user;
+            device->seed_ = seed;
             device->random_pwd_md5_ = random_pwd_md5;
+            device->gen_random_pwd_ = gen_random_pwd;
             device->safety_pwd_md5_ = safety_pwd_md5;
             device->used_time_ = used_time;
             device->created_timestamp_ = created_timestamp;
-            device->updated_timestamp_ = last_update_timestamp;
+            device->last_update_timestamp_ = last_update_timestamp;
+            device->desktop_link_ = desktop_link;
+            device->desktop_link_raw_ = desktop_link_raw;
             return device;
         } catch(std::exception& e) {
             LOGE("ParseJsonAsDevice failed: {}, message: {}", e.what(), body);

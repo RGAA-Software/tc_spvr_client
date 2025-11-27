@@ -13,6 +13,7 @@
 #include "tc_common_new/ip_util.h"
 #include "tc_common_new/base64.h"
 #include "tc_common_new/uuid.h"
+#include "spvr_device.h"
 
 // /api/v1/user/control
 const std::string kSpvrUserControl = "/api/v1/user/control";
@@ -93,12 +94,14 @@ namespace spvr
                                                              int port,
                                                              const std::string& appkey,
                                                              const std::string& username,
-                                                             const std::string& hash_password) {
+                                                             const std::string& hash_password,
+                                                             const std::string& device_id) {
         auto client = tc::HttpClient::MakeSSL(host, port, kLogin);
 
         json obj;
         obj[kUserName] = username;
         obj[kUserHashPassword] = hash_password;
+        obj[kDeviceId] = device_id;
 
         auto resp = client->Post({
              {"appkey", appkey}

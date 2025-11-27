@@ -39,6 +39,14 @@ namespace spvr
         // get device
         static tc::Result<SpvrDevicePtr, SpvrApiError> QueryDevice(const std::string& host, int port, const std::string& appkey, const std::string& device_id);
 
+        // update desktop link
+        static tc::Result<SpvrDevicePtr, SpvrApiError> UpdateDesktopLink(const std::string& host,
+                                                                         int port,
+                                                                         const std::string& appkey,
+                                                                         const std::string& device_id,
+                                                                         const std::string& desktop_link,
+                                                                         const std::string& desktop_link_raw);
+
     private:
         static SpvrDevicePtr ParseJsonAsDevice(const std::string& body);
 
