@@ -25,30 +25,55 @@ namespace spvr
     class SpvrDeviceApi {
     public:
         // ping
-        static tc::Result<bool, SpvrApiError> Ping(const std::string& host, int port, const std::string& appkey);
+        static
+        tc::Result<bool, SpvrApiError>
+        Ping(const std::string& host,
+             int port,
+             const std::string& appkey);
 
         // create new device
-        static tc::Result<SpvrDevicePtr, SpvrApiError> RequestNewDevice(const std::string& host, int port, const std::string& appkey, const std::string& info);
+        static
+        tc::Result<SpvrDevicePtr, SpvrApiError>
+        RequestNewDevice(const std::string& host,
+                         int port,
+                         const std::string& appkey,
+                         const std::string& default_name,
+                         const std::string& info);
 
         // update random password
-        static tc::Result<SpvrDevicePtr, SpvrApiError> UpdateRandomPwd(const std::string& host, int port, const std::string& appkey, const std::string& device_id);
+        static
+        tc::Result<SpvrDevicePtr, SpvrApiError>
+        UpdateRandomPwd(const std::string& host,
+                        int port,
+                        const std::string& appkey,
+                        const std::string& device_id);
 
         // update safety password
-        static tc::Result<SpvrDevicePtr, SpvrApiError> UpdateSafetyPwd(const std::string& host, int port, const std::string& appkey, const std::string& device_id, const std::string& safety_pwd_md5);
+        static
+        tc::Result<SpvrDevicePtr, SpvrApiError>
+        UpdateSafetyPwd(const std::string& host,
+                        int port,
+                        const std::string& appkey,
+                        const std::string& device_id,
+                        const std::string& safety_pwd_md5);
 
         // get device
-        static tc::Result<SpvrDevicePtr, SpvrApiError> QueryDevice(const std::string& host, int port, const std::string& appkey, const std::string& device_id);
+        static
+        tc::Result<SpvrDevicePtr, SpvrApiError>
+        QueryDevice(const std::string& host,
+                    int port,
+                    const std::string& appkey,
+                    const std::string& device_id);
 
         // update desktop link
-        static tc::Result<SpvrDevicePtr, SpvrApiError> UpdateDesktopLink(const std::string& host,
-                                                                         int port,
-                                                                         const std::string& appkey,
-                                                                         const std::string& device_id,
-                                                                         const std::string& desktop_link,
-                                                                         const std::string& desktop_link_raw);
-
-    private:
-        static SpvrDevicePtr ParseJsonAsDevice(const std::string& body);
+        static
+        tc::Result<SpvrDevicePtr, SpvrApiError>
+        UpdateDesktopLink(const std::string& host,
+                          int port,
+                          const std::string& appkey,
+                          const std::string& device_id,
+                          const std::string& desktop_link,
+                          const std::string& desktop_link_raw);
 
     };
 

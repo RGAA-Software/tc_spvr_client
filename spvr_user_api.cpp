@@ -80,8 +80,8 @@ namespace spvr
         }
 
         try {
-            auto data = to_string(json::parse(resp.body)["data"]);
-            return SpvrUser::FromJson(data);
+            auto data = json::parse(resp.body)["data"];
+            return SpvrUser::FromObj(data);
         }
         catch(std::exception& e) {
             LOGE("Parse json failed: {}", e.what());
@@ -115,8 +115,8 @@ namespace spvr
         }
 
         try {
-            auto data = to_string(json::parse(resp.body)["data"]);
-            return SpvrUser::FromJson(data);
+            auto data = json::parse(resp.body)["data"];
+            return SpvrUser::FromObj(data);
         }
         catch(std::exception& e) {
             LOGE("Parse json failed: {}", e.what());
@@ -146,8 +146,8 @@ namespace spvr
         }
 
         try {
-            auto data = to_string(json::parse(resp.body)["data"]);
-            return SpvrUser::FromJson(data);
+            auto data = json::parse(resp.body)["data"];
+            return SpvrUser::FromObj(data);
         }
         catch(std::exception& e) {
             LOGE("Logout Parse json failed: {}", e.what());
@@ -181,8 +181,8 @@ namespace spvr
         }
 
         try {
-            auto data = to_string(json::parse(resp.body)["data"]);
-            return SpvrUser::FromJson(data);
+            auto data = json::parse(resp.body)["data"];
+            return SpvrUser::FromObj(data);
         }
         catch(std::exception& e) {
             LOGE("Update Parse json failed: {}", e.what());
@@ -213,8 +213,8 @@ namespace spvr
         }
 
         try {
-            auto data = to_string(json::parse(resp.body)["data"]);
-            return SpvrUser::FromJson(data);
+            auto data = json::parse(resp.body)["data"];
+            return SpvrUser::FromObj(data);
         }
         catch(std::exception& e) {
             LOGE("Update Parse json failed: {}", e.what());
@@ -248,8 +248,8 @@ namespace spvr
         }
 
         try {
-            auto data = to_string(json::parse(resp.body)["data"]);
-            return SpvrUser::FromJson(data);
+            auto data = json::parse(resp.body)["data"];
+            return SpvrUser::FromObj(data);
         }
         catch(std::exception& e) {
             LOGE("Parse json failed: {}", e.what());

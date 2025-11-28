@@ -70,6 +70,7 @@ namespace spvr
     Result<SpvrDevicePtr, SpvrApiError> SpvrDeviceApi::RequestNewDevice(const std::string& host,
                                                                   int port,
                                                                   const std::string& appkey,
+                                                                  const std::string& default_name,
                                                                   const std::string& info) {
         std::string hw_info;
         if (info.empty()) {
@@ -104,7 +105,8 @@ namespace spvr
             {"platform", "android"},
 #endif
              {"hw_info", hw_info},
-             {"appkey", appkey}
+             {"appkey", appkey},
+             {"device_name", default_name}
         });
 
         LOGI("RequestNewDevice, hw_info: {}, appkey: {}", hw_info, appkey);
@@ -114,10 +116,12 @@ namespace spvr
             return TcErr((SpvrApiError)resp.status);
         }
 
-        if (auto r = ParseJsonAsDevice(resp.body); r) {
-            return r;
+        try {
+            auto json_obj = json::parse(resp.body)["data"];
+            return SpvrDevice::FromObj(json_obj);
         }
-        else {
+        catch(std::exception& e) {
+            LOGE("Parse json failed: {}", e.what());
             return TcErr(SpvrApiError::kParseJsonFailed);
         }
     }
@@ -138,10 +142,12 @@ namespace spvr
             return TcErr((SpvrApiError)resp.status);
         }
 
-        if (auto r = ParseJsonAsDevice(resp.body); r) {
-            return r;
+        try {
+            auto json_obj = json::parse(resp.body)["data"];
+            return SpvrDevice::FromObj(json_obj);
         }
-        else {
+        catch(std::exception& e) {
+            LOGE("Parse json failed: {}", e.what());
             return TcErr(SpvrApiError::kParseJsonFailed);
         }
     }
@@ -164,10 +170,12 @@ namespace spvr
             return TcErr((SpvrApiError)resp.status);
         }
 
-        if (auto r = ParseJsonAsDevice(resp.body); r) {
-            return r;
+        try {
+            auto json_obj = json::parse(resp.body)["data"];
+            return SpvrDevice::FromObj(json_obj);
         }
-        else {
+        catch(std::exception& e) {
+            LOGE("Parse json failed: {}", e.what());
             return TcErr(SpvrApiError::kParseJsonFailed);
         }
     }
@@ -189,10 +197,12 @@ namespace spvr
             return TcErr((SpvrApiError)resp.status);
         }
 
-        if (auto r = ParseJsonAsDevice(resp.body); r) {
-            return r;
+        try {
+            auto json_obj = json::parse(resp.body)["data"];
+            return SpvrDevice::FromObj(json_obj);
         }
-        else {
+        catch(std::exception& e) {
+            LOGE("Parse json failed: {}, resp.body: {}", e.what(), resp.body);
             return TcErr(SpvrApiError::kParseJsonFailed);
         }
     }
@@ -218,46 +228,13 @@ namespace spvr
             return TcErr((SpvrApiError)resp.status);
         }
 
-        if (auto r = ParseJsonAsDevice(resp.body); r) {
-            return r;
-        }
-        else {
-            return TcErr(SpvrApiError::kParseJsonFailed);
-        }
-    }
-
-    std::shared_ptr<SpvrDevice> SpvrDeviceApi::ParseJsonAsDevice(const std::string& body) {
         try {
-            auto obj = json::parse(body);
-            auto device_id = obj["data"][kDeviceId].get<std::string>();
-            auto logged_in_user = obj["data"][kDeviceLoggedInUser].get<std::string>();
-            auto seed = obj["data"][kDeviceSeed].get<std::string>();
-            auto random_pwd_md5 = obj["data"][kDeviceRandomPwd].get<std::string>();
-            auto gen_random_pwd = obj["data"][kGenRandomPwd].get<std::string>();
-            auto safety_pwd_md5 = obj["data"][kDeviceSafetyPwd].get<std::string>();
-            auto used_time = obj["data"][kUsedTime].get<int64_t>();
-            auto created_timestamp = obj["data"][kDeviceCreatedTimestamp].get<int64_t>();
-            auto last_update_timestamp = obj["data"][kDeviceUpdatedTimestamp].get<int64_t>();
-            auto desktop_link = obj["data"][kDeviceDesktopLink].get<std::string>();
-            auto desktop_link_raw = obj["data"][kDeviceDesktopLinkRaw].get<std::string>();
-            //LOGI("PaserJsonAsDevice: {} => RPWD: {}, SPWD: {}", resp_device_id, random_pwd_md5, safety_pwd_md5);
-
-            auto device = std::make_shared<SpvrDevice>();
-            device->device_id_ = device_id;
-            device->logged_in_user_id_ = logged_in_user;
-            device->seed_ = seed;
-            device->random_pwd_md5_ = random_pwd_md5;
-            device->gen_random_pwd_ = gen_random_pwd;
-            device->safety_pwd_md5_ = safety_pwd_md5;
-            device->used_time_ = used_time;
-            device->created_timestamp_ = created_timestamp;
-            device->last_update_timestamp_ = last_update_timestamp;
-            device->desktop_link_ = desktop_link;
-            device->desktop_link_raw_ = desktop_link_raw;
-            return device;
-        } catch(std::exception& e) {
-            LOGE("ParseJsonAsDevice failed: {}, message: {}", e.what(), body);
-            return nullptr;
+            auto json_obj = json::parse(resp.body)["data"];
+            return SpvrDevice::FromObj(json_obj);
+        }
+        catch(std::exception& e) {
+            LOGE("Parse json failed: {}", e.what());
+            return TcErr(SpvrApiError::kParseJsonFailed);
         }
     }
     

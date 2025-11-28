@@ -1,10 +1,13 @@
 project(tc_spvr_client)
 
 set(SRCS
+    spvr_device.cpp
     spvr_device_api.cpp
     spvr_user.cpp
     spvr_user_api.cpp
     spvr_stream.cpp
+    spvr_user_device.cpp
+    spvr_user_device_api.cpp
 )
 
 add_library(${PROJECT_NAME} ${SRCS})

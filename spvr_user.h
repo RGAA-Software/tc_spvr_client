@@ -7,6 +7,9 @@
 
 #include <string>
 #include <memory>
+#include "json/json.hpp"
+
+using namespace nlohmann;
 
 namespace spvr
 {
@@ -22,17 +25,23 @@ namespace spvr
     const std::string kUserDeleted = "deleted";
     const std::string kUserAvatarPath = "avatar_path";
     const std::string kUserAdministrator = "administrator";
+    const std::string kPage = "page";
+    const std::string kPageSize = "page_size";
 
     class SpvrUser {
     public:
+        // obj["data"]["xx"]
         static std::shared_ptr<SpvrUser> FromJson(const std::string& json_str);
+        // obj["xx"]
+        static std::shared_ptr<SpvrUser> FromObj(const json& obj);
         std::string AsJson();
+        std::string Dump();
 
     public:
         std::string uid_;
         std::string username_;
         std::string password_;
-        std::string assigned_;
+        bool assigned_;
         int64_t created_timestamp_ = 0;
         int64_t updated_timestamp_ = 0;
         bool deleted_ = false;
