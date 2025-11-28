@@ -41,6 +41,9 @@ const std::string kApiQueryDeviceById = kSpvrDeviceControl + "/query/device/by/i
 // update desktop link
 const std::string kApiUpdateDesktopLink = kSpvrDeviceControl + "/update/desktop/link";
 
+// update device name
+const std::string kApiUpdateDeviceName = kSpvrDeviceControl + "/update/device/name";
+
 namespace spvr
 {
 
@@ -136,7 +139,6 @@ namespace spvr
             {"appkey", appkey}
         });
 
-        LOGI("UpdateRandomPwd, status:{}, : {}", resp.status, resp.body);
         if (resp.status != 200 || resp.body.empty()) {
             LOGE("UpdateRandomPwd failed: {}", resp.status);
             return TcErr((SpvrApiError)resp.status);
@@ -164,7 +166,6 @@ namespace spvr
             {"appkey", appkey}
         });
 
-        LOGI("UpdateSafetyPwd, status: {}, : {}", resp.status, resp.body);
         if (resp.status != 200 || resp.body.empty()) {
             LOGE("UpdateSafetyPwd failed: {}", resp.status);
             return TcErr((SpvrApiError)resp.status);
@@ -190,8 +191,6 @@ namespace spvr
             {"appkey", appkey}
         });
 
-        //LOGI("Req path: {}", client->GetReqPath());
-        //LOGI("QueryDevice, status: {}, : {}", resp.status, resp.body);
         if (resp.status != 200 || resp.body.empty()) {
             LOGE("GetDevice failed: {}, code: {}", device_id, resp.status);
             return TcErr((SpvrApiError)resp.status);
@@ -222,7 +221,6 @@ namespace spvr
             {"appkey", appkey}
         }, obj.dump());
 
-        LOGI("UpdateDesktopLink, status: {}, : {}", resp.status, resp.body);
         if (resp.status != 200 || resp.body.empty()) {
             LOGE("UpdateDesktopLink failed: {}", resp.status);
             return TcErr((SpvrApiError)resp.status);
@@ -237,5 +235,33 @@ namespace spvr
             return TcErr(SpvrApiError::kParseJsonFailed);
         }
     }
-    
+
+    tc::Result<SpvrDevicePtr, SpvrApiError> SpvrDeviceApi::UpdateDeviceName(const std::string& host,
+                                                                            int port,
+                                                                            const std::string& appkey,
+                                                                            const std::string& device_id,
+                                                                            const std::string& device_name) {
+        auto client = HttpClient::MakeSSL(host, port, kApiUpdateDeviceName, 2000);
+        json obj;
+        obj[kDeviceId] = device_id;
+        obj[kDeviceName] = device_name;
+        auto resp = client->Post({
+            {"appkey", appkey}
+        }, obj.dump());
+
+        if (resp.status != 200 || resp.body.empty()) {
+            LOGE("UpdateDeviceName failed: {}", resp.status);
+            return TcErr((SpvrApiError)resp.status);
+        }
+
+        try {
+            auto json_obj = json::parse(resp.body)["data"];
+            return SpvrDevice::FromObj(json_obj);
+        }
+        catch(std::exception& e) {
+            LOGE("Parse json failed: {}", e.what());
+            return TcErr(SpvrApiError::kParseJsonFailed);
+        }
+    }
+
 }

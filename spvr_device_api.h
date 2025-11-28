@@ -75,6 +75,15 @@ namespace spvr
                           const std::string& desktop_link,
                           const std::string& desktop_link_raw);
 
+
+        // update device name
+        static
+        tc::Result<SpvrDevicePtr, SpvrApiError>
+        UpdateDeviceName(const std::string& host,
+                         int port,
+                         const std::string& appkey,
+                         const std::string& device_id,
+                         const std::string& device_name);
     };
 
 }
