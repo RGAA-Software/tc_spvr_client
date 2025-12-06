@@ -27,6 +27,13 @@ namespace spvr
         kUploadFileFailed = 612,
         kVerifyPasswordFailed = 613,
         kStreamNotFound = 614,
+        kConnectionNotFound = 615,
+        kUserDeviceNotFound = 616,
+        kUserDeviceAlreadyExists = 617,
+        kNeedDescParam = 618,
+        kNeedVersionParam = 619,
+        kVersionNotFound = 620,
+        kFileNotFound = 621,
     };
 
     static std::string SpvrApiErrorAsString(const SpvrApiError& err) {
