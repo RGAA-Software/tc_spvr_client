@@ -30,6 +30,24 @@ namespace spvr
                              const std::string& uid,
                              int page,
                              int page_size);
+
+        // add a device to user
+        static
+        tc::Result<std::shared_ptr<SpvrUserDevice>, SpvrApiError>
+        AddDeviceForUser(const std::string& host,
+                         int port,
+                         const std::string& appkey,
+                         const std::string& uid,
+                         const std::string& device_id);
+
+        // remove a device from user
+        static
+        tc::Result<std::shared_ptr<SpvrUserDevice>, SpvrApiError>
+        RemoveDeviceFromUser(const std::string& host,
+                         int port,
+                         const std::string& appkey,
+                         const std::string& uid,
+                         const std::string& device_id);
     };
 
 }

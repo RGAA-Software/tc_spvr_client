@@ -13,6 +13,8 @@
 
 const std::string kUserDeviceControl = "/api/v1/user_device/control";
 const std::string kQueryUserDevices = kUserDeviceControl + "/query/user/devices";
+const std::string kAddDeviceForUser = kUserDeviceControl + "/add/device/for/user";
+const std::string kRemoveDeviceFromUser = kUserDeviceControl + "/remove/device/from/user";
 
 using namespace tc;
 using namespace nlohmann;
@@ -59,6 +61,66 @@ namespace spvr
                 }
             }
             return devices;
+        }
+        catch (const std::exception& e) {
+            LOGE("QueryUserBindDevices parse failed: {}", e.what());
+            return TcErr(SpvrApiError::kParseJsonFailed);
+        }
+    }
+
+    tc::Result<std::shared_ptr<SpvrUserDevice>, SpvrApiError>
+    SpvrUserDeviceApi::AddDeviceForUser(const std::string& host,
+                                        int port,
+                                        const std::string& appkey,
+                                        const std::string& uid,
+                                        const std::string& device_id) {
+        auto client = HttpClient::MakeSSL(host, port, kAddDeviceForUser, 2000);
+        json obj;
+        obj[kUserId] = uid;
+        obj[kDeviceId] = device_id;
+        auto resp = client->Post({
+            {"appkey", appkey},
+        }, obj.dump());
+
+        if (resp.status != 200 || resp.body.empty()) {
+            LOGE("QueryUserDevices failed: {}", resp.status);
+            return TcErr((SpvrApiError)resp.status);
+        }
+
+        try {
+            json obj = json::parse(resp.body)[kData];
+            auto r = SpvrUserDevice::FromObj(obj);
+            return r;
+        }
+        catch (const std::exception& e) {
+            LOGE("QueryUserBindDevices parse failed: {}", e.what());
+            return TcErr(SpvrApiError::kParseJsonFailed);
+        }
+    }
+
+    tc::Result<std::shared_ptr<SpvrUserDevice>, SpvrApiError>
+    SpvrUserDeviceApi::RemoveDeviceFromUser(const std::string& host,
+                                            int port,
+                                            const std::string& appkey,
+                                            const std::string& uid,
+                                            const std::string& device_id) {
+        auto client = HttpClient::MakeSSL(host, port, kRemoveDeviceFromUser, 2000);
+        json obj;
+        obj[kUserId] = uid;
+        obj[kDeviceId] = device_id;
+        auto resp = client->Post({
+            {"appkey", appkey},
+        }, obj.dump());
+
+        if (resp.status != 200 || resp.body.empty()) {
+            LOGE("QueryUserDevices failed: {}", resp.status);
+            return TcErr((SpvrApiError)resp.status);
+        }
+
+        try {
+            json obj = json::parse(resp.body)[kData];
+            auto r = SpvrUserDevice::FromObj(obj);
+            return r;
         }
         catch (const std::exception& e) {
             LOGE("QueryUserBindDevices parse failed: {}", e.what());
