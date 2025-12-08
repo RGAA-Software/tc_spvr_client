@@ -110,6 +110,8 @@ namespace spvr
         // wait debug
         bool wait_debug_ = false;
 
+        // force gdi capture
+        bool force_gdi_capture_ = false;
 
         // Extra
         ///// NOT in database
