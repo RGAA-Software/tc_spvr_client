@@ -29,7 +29,7 @@ namespace spvr
                                             const std::string& uid,
                                             int page,
                                             int page_size) {
-        auto client = HttpClient::MakeSSL(host, port, kQueryUserDevices, 2000);
+        const auto client = HttpClient::MakeSSL(host, port, kQueryUserDevices, 2000);
         auto resp = client->Request({
             {"appkey", appkey},
             {kUserId, uid},
@@ -74,7 +74,7 @@ namespace spvr
                                         const std::string& appkey,
                                         const std::string& uid,
                                         const std::string& device_id) {
-        auto client = HttpClient::MakeSSL(host, port, kAddDeviceForUser, 2000);
+        const auto client = HttpClient::MakeSSL(host, port, kAddDeviceForUser, 2000);
         json obj;
         obj[kUserId] = uid;
         obj[kDeviceId] = device_id;
@@ -104,7 +104,7 @@ namespace spvr
                                             const std::string& appkey,
                                             const std::string& uid,
                                             const std::string& device_id) {
-        auto client = HttpClient::MakeSSL(host, port, kRemoveDeviceFromUser, 2000);
+        const auto client = HttpClient::MakeSSL(host, port, kRemoveDeviceFromUser, 2000);
         json obj;
         obj[kUserId] = uid;
         obj[kDeviceId] = device_id;

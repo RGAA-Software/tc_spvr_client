@@ -44,10 +44,10 @@ namespace spvr
         static
         tc::Result<std::shared_ptr<SpvrUserDevice>, SpvrApiError>
         RemoveDeviceFromUser(const std::string& host,
-                         int port,
-                         const std::string& appkey,
-                         const std::string& uid,
-                         const std::string& device_id);
+                             int port,
+                             const std::string& appkey,
+                             const std::string& uid,
+                             const std::string& device_id);
     };
 
 }
