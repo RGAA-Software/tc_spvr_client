@@ -1,6 +1,7 @@
 project(tc_spvr_client)
 
 set(SRCS
+    spvr_api.cpp
     spvr_device.cpp
     spvr_device_api.cpp
     spvr_user.cpp
