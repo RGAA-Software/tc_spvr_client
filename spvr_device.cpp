@@ -38,6 +38,7 @@ namespace spvr
             device->last_update_timestamp_ = obj[kDeviceUpdatedTimestamp].get<int64_t>();
             device->desktop_link_ = obj[kDeviceDesktopLink].get<std::string>();
             device->desktop_link_raw_ = obj[kDeviceDesktopLinkRaw].get<std::string>();
+            device->active_ = obj[kDeviceActive].get<bool>();
             return device;
         }
         catch (const std::exception& e) {
@@ -61,6 +62,7 @@ namespace spvr
         oss << std::setw(22) << "gen_random_pwd:"      << gen_random_pwd_ << "\n";
         oss << std::setw(22) << "desktop_link:"        << desktop_link_ << "\n";
         oss << std::setw(22) << "desktop_link_raw:"    << desktop_link_raw_ << "\n";
+        oss << std::setw(22) << "active:"              << active_ << "\n";
         return oss.str();
     }
 

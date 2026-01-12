@@ -44,6 +44,9 @@ const std::string kApiUpdateDesktopLink = kSpvrDeviceControl + "/update/desktop/
 // update device name
 const std::string kApiUpdateDeviceName = kSpvrDeviceControl + "/update/device/name";
 
+// /append/used/time
+const std::string kApiAppendUsedTime = kSpvrDeviceControl + "/append/used/time";
+
 namespace spvr
 {
 
@@ -247,6 +250,36 @@ namespace spvr
         obj[kDeviceName] = device_name;
         auto resp = client->Post({
             {"appkey", appkey}
+        }, obj.dump());
+
+        if (resp.status != 200 || resp.body.empty()) {
+            LOGE("UpdateDeviceName failed: {}", resp.status);
+            return TcErr((SpvrApiError)resp.status);
+        }
+
+        try {
+            auto json_obj = json::parse(resp.body)["data"];
+            return SpvrDevice::FromObj(json_obj);
+        }
+        catch(std::exception& e) {
+            LOGE("Parse json failed: {}", e.what());
+            return TcErr(SpvrApiError::kParseJsonFailed);
+        }
+    }
+
+    tc::Result<SpvrDevicePtr, SpvrApiError> SpvrDeviceApi::UpdateUsedTime(const std::string& host,
+                                                                          int port,
+                                                                          const std::string& appkey,
+                                                                          const std::string& device_id,
+                                                                          int period) {
+        auto client = HttpClient::MakeSSL(host, port, kApiAppendUsedTime, 2000);
+        json obj;
+        obj[kDeviceId] = device_id;
+        obj["period"] = period;
+        auto resp = client->Post({
+            {"appkey", appkey},
+            {"period", std::to_string(period)},
+            {kDeviceId, device_id},
         }, obj.dump());
 
         if (resp.status != 200 || resp.body.empty()) {

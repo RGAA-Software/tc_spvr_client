@@ -28,6 +28,7 @@ namespace spvr
     const std::string kGenRandomPwd = "gen_random_pwd";
     const std::string kDeviceDesktopLink = "desktop_link";
     const std::string kDeviceDesktopLinkRaw = "desktop_link_raw";
+    const std::string kDeviceActive = "active";
 
     class SpvrDevice {
     public:
@@ -65,6 +66,8 @@ namespace spvr
         std::string desktop_link_;
         //
         std::string desktop_link_raw_;
+        // active
+        bool active_{true};
     };
 
 }

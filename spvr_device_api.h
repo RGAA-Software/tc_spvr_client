@@ -84,6 +84,15 @@ namespace spvr
                          const std::string& appkey,
                          const std::string& device_id,
                          const std::string& device_name);
+
+        // update device name
+        static
+        tc::Result<SpvrDevicePtr, SpvrApiError>
+        UpdateUsedTime(const std::string& host,
+                         int port,
+                         const std::string& appkey,
+                         const std::string& device_id,
+                         int period);
     };
 
 }
