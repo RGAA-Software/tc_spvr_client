@@ -124,7 +124,11 @@ namespace spvr
 
         try {
             auto json_obj = json::parse(resp.body)["data"];
-            return SpvrDevice::FromObj(json_obj);
+            if (auto obj = SpvrDevice::FromObj(json_obj); obj) {
+                return obj;
+            }
+            return TcErr(SpvrApiError::kParseJsonFailed);
+
         }
         catch(std::exception& e) {
             LOGE("Parse json failed: {}", e.what());
@@ -149,7 +153,10 @@ namespace spvr
 
         try {
             auto json_obj = json::parse(resp.body)["data"];
-            return SpvrDevice::FromObj(json_obj);
+            if (auto obj = SpvrDevice::FromObj(json_obj); obj) {
+                return obj;
+            }
+            return TcErr(SpvrApiError::kParseJsonFailed);
         }
         catch(std::exception& e) {
             LOGE("Parse json failed: {}", e.what());
@@ -176,7 +183,10 @@ namespace spvr
 
         try {
             auto json_obj = json::parse(resp.body)["data"];
-            return SpvrDevice::FromObj(json_obj);
+            if (auto obj = SpvrDevice::FromObj(json_obj); obj) {
+                return obj;
+            }
+            return TcErr(SpvrApiError::kParseJsonFailed);
         }
         catch(std::exception& e) {
             LOGE("Parse json failed: {}", e.what());
@@ -201,7 +211,10 @@ namespace spvr
 
         try {
             auto json_obj = json::parse(resp.body)["data"];
-            return SpvrDevice::FromObj(json_obj);
+            if (auto obj = SpvrDevice::FromObj(json_obj); obj) {
+                return obj;
+            }
+            return TcErr(SpvrApiError::kParseJsonFailed);
         }
         catch(std::exception& e) {
             LOGE("Parse json failed: {}, resp.body: {}", e.what(), resp.body);
@@ -231,7 +244,10 @@ namespace spvr
 
         try {
             auto json_obj = json::parse(resp.body)["data"];
-            return SpvrDevice::FromObj(json_obj);
+            if (auto obj = SpvrDevice::FromObj(json_obj); obj) {
+                return obj;
+            }
+            return TcErr(SpvrApiError::kParseJsonFailed);
         }
         catch(std::exception& e) {
             LOGE("Parse json failed: {}", e.what());
@@ -259,7 +275,10 @@ namespace spvr
 
         try {
             auto json_obj = json::parse(resp.body)["data"];
-            return SpvrDevice::FromObj(json_obj);
+            if (auto obj = SpvrDevice::FromObj(json_obj); obj) {
+                return obj;
+            }
+            return TcErr(SpvrApiError::kParseJsonFailed);
         }
         catch(std::exception& e) {
             LOGE("Parse json failed: {}", e.what());
@@ -289,7 +308,10 @@ namespace spvr
 
         try {
             auto json_obj = json::parse(resp.body)["data"];
-            return SpvrDevice::FromObj(json_obj);
+            if (auto obj = SpvrDevice::FromObj(json_obj); obj) {
+                return obj;
+            }
+            return TcErr(SpvrApiError::kParseJsonFailed);
         }
         catch(std::exception& e) {
             LOGE("Parse json failed: {}", e.what());
