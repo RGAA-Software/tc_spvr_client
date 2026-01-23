@@ -9,6 +9,8 @@ set(SRCS
     spvr_stream.cpp
     spvr_user_device.cpp
     spvr_user_device_api.cpp
+    spvr_event.cpp
+    spvr_event_api.cpp
 )
 
 add_library(${PROJECT_NAME} ${SRCS})

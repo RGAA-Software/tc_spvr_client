@@ -29,6 +29,7 @@ namespace spvr
     const std::string kDeviceDesktopLink = "desktop_link";
     const std::string kDeviceDesktopLinkRaw = "desktop_link_raw";
     const std::string kDeviceActive = "active";
+    const std::string kDeviceIp = "device_ip";
 
     class SpvrDevice {
     public:
