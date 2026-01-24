@@ -26,26 +26,35 @@ namespace tc
     class SpvrEvent {
     public:
         static std::shared_ptr<SpvrEvent> CpuOverload(const std::string& device_id,
-            const std::string& device_ip,
-            const std::string& device_name,
-            const std::string& uid,
-            const std::string& username,
-            int cpu_usage);
+                                                      const std::string& device_ip,
+                                                      const std::string& device_name,
+                                                      const std::string& uid,
+                                                      const std::string& username,
+                                                      int cpu_usage);
 
         static std::shared_ptr<SpvrEvent> MemoryOverload(const std::string& device_id,
-            const std::string& device_ip,
-            const std::string& device_name,
-            const std::string& uid,
-            const std::string& username,
-            int mem_usage);
+                                                         const std::string& device_ip,
+                                                         const std::string& device_name,
+                                                         const std::string& uid,
+                                                         const std::string& username,
+                                                         int mem_usage);
 
         static std::shared_ptr<SpvrEvent> DiskOverload(const std::string& device_id,
-            const std::string& device_ip,
-            const std::string& device_name,
-            const std::string& uid,
-            const std::string& username,
-            int disk_usage,
-            const std::string& disk_path);
+                                                       const std::string& device_ip,
+                                                       const std::string& device_name,
+                                                       const std::string& uid,
+                                                       const std::string& username,
+                                                       int disk_usage,
+                                                       const std::string& disk_path);
+
+        static std::shared_ptr<SpvrEvent> GpuOverload(const std::string& device_id,
+                                                      const std::string& device_ip,
+                                                      const std::string& device_name,
+                                                      const std::string& uid,
+                                                      const std::string& username,
+                                                      int gpu_usage,
+                                                      const std::string& gpu_id,
+                                                      const std::string& gpu_name);
 
         std::string AsJson();
 

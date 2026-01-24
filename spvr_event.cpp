@@ -119,4 +119,25 @@ namespace tc
         return event;
     }
 
+    std::shared_ptr<SpvrEvent> SpvrEvent::GpuOverload(const std::string& device_id,
+                                                  const std::string& device_ip,
+                                                  const std::string& device_name,
+                                                  const std::string& uid,
+                                                  const std::string& username,
+                                                  int gpu_usage,
+                                                  const std::string& gpu_id,
+                                                  const std::string& gpu_name) {
+        auto event = std::make_shared<SpvrEvent>();
+        event->event_type_ = "gpu";
+        event->device_id_ = device_id;
+        event->device_ip_ = device_ip;
+        event->device_name_ = device_name;
+        event->user_id_ = uid;
+        event->user_name_ = username;
+        event->gpu_usage_ = gpu_usage;
+        event->gpu_id_ = gpu_id;
+        event->gpu_name_ = gpu_name;
+        return event;
+    }
+
 }
