@@ -113,6 +113,9 @@ namespace spvr
         // force gdi capture
         bool force_gdi_capture_ = false;
 
+        // disable vulkan render
+        bool disable_vulkan_render_ = false;
+
         // Extra
         ///// NOT in database
         bool direct_online_ = false;
