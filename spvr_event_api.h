@@ -26,10 +26,10 @@ namespace tc
     public:
         // Cpu Event
         static Result<SpvrEventPtr, SpvrApiError>
-        AddCpuEvent(const std::string& host,
-                    int port,
-                    const std::string& appkey,
-                    const SpvrEventPtr& event);
+        AddEvent(const std::string& host,
+                 int port,
+                 const std::string& appkey,
+                 const SpvrEventPtr& event);
     };
 
 }

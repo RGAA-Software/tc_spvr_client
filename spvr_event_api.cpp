@@ -28,10 +28,10 @@ namespace tc
     const std::string kApiAddEvent = kSpvrEventControl + "/add";
 
 
-    Result<SpvrEventPtr, SpvrApiError> SpvrEventApi::AddCpuEvent(const std::string& host,
-                                                                 int port,
-                                                                 const std::string& appkey,
-                                                                 const SpvrEventPtr& event) {
+    Result<SpvrEventPtr, SpvrApiError> SpvrEventApi::AddEvent(const std::string& host,
+                                                              int port,
+                                                              const std::string& appkey,
+                                                              const SpvrEventPtr& event) {
         auto client = HttpClient::MakeSSL(host, port, kApiAddEvent, 2000);
 
         const auto data = event->AsJson();

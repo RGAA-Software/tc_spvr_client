@@ -27,7 +27,7 @@ namespace tc
             {"user_name", e.user_name_},
             {"log_path", e.log_path_},
             {"cpu_usage", e.cpu_usage_},
-            {"mem_usage", e.mem_usage_},
+            {"memory_usage", e.mem_usage_},
             {"disk_usage", e.disk_usage_},
             {"disk_path", e.disk_path_},
             {"gpu_usage", e.gpu_usage_},
@@ -51,7 +51,7 @@ namespace tc
         j.at("user_name").get_to(e.user_name_);
         j.at("log_path").get_to(e.log_path_);
         j.at("cpu_usage").get_to(e.cpu_usage_);
-        j.at("mem_usage").get_to(e.mem_usage_);
+        j.at("memory_usage").get_to(e.mem_usage_);
         j.at("disk_usage").get_to(e.disk_usage_);
         j.at("disk_path").get_to(e.disk_path_);
         j.at("gpu_usage").get_to(e.gpu_usage_);
@@ -80,6 +80,42 @@ namespace tc
         event->user_id_ = uid;
         event->user_name_ = username;
         event->cpu_usage_ = cpu_usage;
+        return event;
+    }
+
+    std::shared_ptr<SpvrEvent> SpvrEvent::MemoryOverload(const std::string& device_id,
+                                                    const std::string& device_ip,
+                                                    const std::string& device_name,
+                                                    const std::string& uid,
+                                                    const std::string& username,
+                                                    int mem_usage_) {
+        auto event = std::make_shared<SpvrEvent>();
+        event->event_type_ = "memory";
+        event->device_id_ = device_id;
+        event->device_ip_ = device_ip;
+        event->device_name_ = device_name;
+        event->user_id_ = uid;
+        event->user_name_ = username;
+        event->mem_usage_ = mem_usage_;
+        return event;
+    }
+
+    std::shared_ptr<SpvrEvent> SpvrEvent::DiskOverload(const std::string& device_id,
+                                                const std::string& device_ip,
+                                                const std::string& device_name,
+                                                const std::string& uid,
+                                                const std::string& username,
+                                                int disk_usage,
+                                                const std::string& disk_path) {
+        auto event = std::make_shared<SpvrEvent>();
+        event->event_type_ = "disk";
+        event->device_id_ = device_id;
+        event->device_ip_ = device_ip;
+        event->device_name_ = device_name;
+        event->user_id_ = uid;
+        event->user_name_ = username;
+        event->disk_usage_ = disk_usage;
+        event->disk_path_ = disk_path;
         return event;
     }
 
