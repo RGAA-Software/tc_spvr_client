@@ -12,7 +12,7 @@ namespace spvr
     }
 
     bool SpvrStream::HasRelayInfo() const {
-        return !remote_device_id_.empty() && !relay_host_.empty() && relay_port_ > 0 && !relay_appkey_.empty();
+        return !remote_device_id_.empty() && !relay_host_.empty() && relay_port_ > 0;
     }
 
 }

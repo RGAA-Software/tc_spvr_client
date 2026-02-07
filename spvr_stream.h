@@ -62,7 +62,7 @@ namespace spvr
         int relay_port_ = 0;
 
         // relay appkey
-        std::string relay_appkey_;
+        //std::string relay_appkey_;
 
         int bg_color_ = 0;
 
