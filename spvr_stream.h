@@ -104,6 +104,9 @@ namespace spvr
         // force relay
         bool force_relay_ = false;
 
+        // force direct
+        bool force_direct_ = false;
+
         // force software
         bool force_software_ = false;
 
