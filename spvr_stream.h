@@ -38,7 +38,7 @@ namespace spvr
         int only_viewing_ = 0;
 
         // show max window
-        int show_max_window_ = 0;
+        int auto_layout_screens_ = 0;
 
         // split windows
         int split_windows_ = 0;
