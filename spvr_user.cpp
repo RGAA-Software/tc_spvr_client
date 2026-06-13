@@ -3,7 +3,7 @@
 //
 
 #include "spvr_user.h"
-#include "json/json.hpp"
+#include <nlohmann/json.hpp>
 #include "tc_common_new/log.h"
 
 using namespace nlohmann;

@@ -4,7 +4,7 @@
 
 #include "spvr_user_device.h"
 #include "tc_common_new/log.h"
-#include "json/json.hpp"
+#include <nlohmann/json.hpp>
 #include "spvr_user.h"
 #include "spvr_device.h"
 

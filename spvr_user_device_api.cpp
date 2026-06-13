@@ -9,7 +9,7 @@
 #include "spvr_user.h"
 #include "spvr_user_device.h"
 #include "spvr_device.h"
-#include "json/json.hpp"
+#include <nlohmann/json.hpp>
 
 const std::string kUserDeviceControl = "/api/v1/user_device/control";
 const std::string kQueryUserDevices = kUserDeviceControl + "/query/user/devices";

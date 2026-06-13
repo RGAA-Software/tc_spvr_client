@@ -4,7 +4,7 @@
 
 #include "spvr_device.h"
 #include "spvr_errors.h"
-#include "json/json.hpp"
+#include <nlohmann/json.hpp>
 #include "tc_common_new/log.h"
 
 using namespace nlohmann;

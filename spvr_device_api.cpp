@@ -5,7 +5,7 @@
 #include "spvr_device_api.h"
 #include "spvr_server_info.h"
 #include "spvr_errors.h"
-#include "json/json.hpp"
+#include <nlohmann/json.hpp>
 #include "spvr_device.h"
 #include "tc_common_new/http_client.h"
 #include "tc_common_new/log.h"

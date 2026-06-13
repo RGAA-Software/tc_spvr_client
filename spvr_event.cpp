@@ -4,7 +4,7 @@
 
 #include "spvr_event.h"
 
-#include "json/json.hpp"
+#include <nlohmann/json.hpp>
 
 using namespace nlohmann;
 
